@@ -2,7 +2,9 @@ use std::io::BufRead;
 
 use anyhow::Result;
 
-fn first(file: Vec<usize>) -> usize {
+type File = Vec<usize>;
+
+fn first(file: File) -> usize {
     let mut prev = 10000;
     let mut count = 0;
     for ele in file {
@@ -13,21 +15,20 @@ fn first(file: Vec<usize>) -> usize {
     }
     count
 }
-fn second(file: Vec<usize>) -> usize {
+fn second(file: File) -> usize {
     let mut prev = 10000;
     let mut count = 0;
-    for pos in 0..file.len()-2 {
-        let window = file[pos] + file[pos+1] + file[pos+2];
+    file.windows(3).map(|w| w.iter().sum()).for_each(|window| {
         if window > prev {
             count += 1;
         }
         prev = window;
-    }
+    });
     count
 }
 
 fn main() -> Result<()> {
-    let file: Vec<usize> = std::fs::read("input")?
+    let file: File = std::fs::read("input")?
         .lines()
         .map(|f| f.unwrap().parse::<usize>().unwrap())
         .collect();
