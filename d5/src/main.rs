@@ -53,13 +53,16 @@ fn second(file: Cord) -> usize {
                 }
             }
             (Some(x1), Some(y1), Some(x2), Some(y2)) => {
-                if let x = x1 > x2 {
-                    (x2..=x1).rev()
-                } else {
-                    (x1..=x2)
-                };
-                for index in 0..=x1.abs_diff(x2) {
-                    safe_add(&mut map, x, y)
+                for i in 0..=x1.abs_diff(x2) {
+                    if (x1 < x2) && y1 < y2 {
+                        safe_add(&mut map, x1 + i, y1 + i)
+                    } else if (x1 > x2) && y1 < y2 {
+                        safe_add(&mut map, x1 - i, y1 + i)
+                    } else if (x1 < x2) && y1 > y2 {
+                        safe_add(&mut map, x1 + i, y1 - i)
+                    } else if (x1 > x2) && y1 > y2 {
+                        safe_add(&mut map, x1 - i, y1 - i)
+                    }
                 }
             }
             a => println!("unhandled line: {:?}", a),
@@ -68,7 +71,7 @@ fn second(file: Cord) -> usize {
     map.values().filter(|v| **v > 1).count()
 }
 fn main() {
-    let file = std::fs::read_to_string("small").unwrap();
+    let file = std::fs::read_to_string("input").unwrap();
     let file: Cord = file
         .lines()
         .map(|l| {
