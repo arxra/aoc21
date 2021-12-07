@@ -1,5 +1,3 @@
-use anyhow::Result;
-
 type File = Vec<String>;
 
 fn first(file: &File) -> usize {
@@ -29,18 +27,6 @@ fn first(file: &File) -> usize {
             epsilon.push('0')
         }
     }
-    println!("counters: {:?} ", counters);
-    println!("size: {:?} ", size);
-    println!(
-        "Gamma: {} - {}",
-        gamma,
-        usize::from_str_radix(&gamma, 2).unwrap()
-    );
-    println!(
-        "epsilon: {} - {}",
-        epsilon,
-        usize::from_str_radix(&epsilon, 2).unwrap()
-    );
     usize::from_str_radix(&gamma, 2).unwrap() * usize::from_str_radix(&epsilon, 2).unwrap()
 }
 
@@ -51,7 +37,7 @@ fn count(file: &File, pos: usize) -> (usize, usize) {
     file.iter().for_each(|line| {
         line.chars().nth(pos).map(|c| {
             if c == '1' {
-                count +=1;
+                count += 1;
             }
         });
     });
@@ -73,7 +59,7 @@ fn second(file: File) -> usize {
                 clear_list.push(i);
             }
         });
-        for index in clear_list.iter().take(o2.len()-1).rev() {
+        for index in clear_list.iter().take(o2.len() - 1).rev() {
             o2.remove(*index);
         }
         pos += 1;
@@ -93,23 +79,29 @@ fn second(file: File) -> usize {
                 clear_list.push(i);
             }
         });
-        for index in clear_list.iter().take(co2.len()-1).rev() {
+        for index in clear_list.iter().take(co2.len() - 1).rev() {
             co2.remove(*index);
         }
         pos += 1;
     }
 
     usize::from_str_radix(&o2[0], 2).unwrap() * usize::from_str_radix(&co2[0], 2).unwrap()
-
 }
 
-fn main() -> Result<()> {
-    let file: File = std::fs::read_to_string("input")?
+
+fn file() -> File {
+    std::fs::read_to_string("input/d3")
+        .unwrap()
         .lines()
         .map(|f| f.to_string())
-        .collect();
+        .collect()
+}
 
-    println!("s1: {}", first(&file));
-    println!("s2: {}", second(file));
-    Ok(())
+#[test]
+fn p1() {
+    println!("d3-1: {}", first(&file()));
+}
+#[test]
+fn p2() {
+    println!("d3-2: {}", first(&file()));
 }

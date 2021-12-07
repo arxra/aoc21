@@ -1,5 +1,3 @@
-use anyhow::Result;
-
 type File = Vec<Data>;
 type Data = (Dir, isize);
 
@@ -16,8 +14,7 @@ impl Dir {
             "forward" => Self::Forward,
             "down" => Self::Down,
             "up" => Self::Up,
-            a => {
-                println!("got direction {}, unknown", a);
+            _ => {
                 todo!()
             }
         }
@@ -53,19 +50,25 @@ fn second(file: File) -> isize {
     x * y
 }
 
-fn main() -> Result<()> {
-    let file: File = std::fs::read_to_string("input")?
+
+fn file() -> File{
+    std::fs::read_to_string("input/d2")
+        .unwrap()
         .lines()
         .map(|f| {
-            println!("f: {}", f);
             (
                 Dir::new(&f[0..f.find(' ').unwrap()]),
                 f[f.find(' ').unwrap() + 1..].parse::<isize>().unwrap(),
             )
         })
-        .collect();
+        .collect()
+}
 
-    println!("s1: {}", first(file.clone()));
-    println!("s2: {}", second(file));
-    Ok(())
+#[test]
+fn p1() {
+    println!("d2-1: {}", first(file()));
+}
+#[test]
+fn p2() {
+    println!("d2-2: {}", second(file()));
 }

@@ -1,7 +1,3 @@
-use std::io::BufRead;
-
-use anyhow::Result;
-
 type File = Vec<usize>;
 
 fn first(file: File) -> usize {
@@ -27,13 +23,19 @@ fn second(file: File) -> usize {
     count
 }
 
-fn main() -> Result<()> {
-    let file: File = std::fs::read("input")?
+fn file() -> File {
+    std::fs::read_to_string("input/d1")
+        .unwrap()
         .lines()
-        .map(|f| f.unwrap().parse::<usize>().unwrap())
-        .collect();
+        .map(|f| f.parse().unwrap())
+        .collect()
+}
 
-    println!("s1: {}", first(file.clone()));
-    println!("s2: {}", second(file));
-    Ok(())
+#[test]
+fn p1() {
+    println!("d1-1: {}", first(file()));
+}
+#[test]
+fn p2() {
+    println!("d1-2: {}", second(file()));
 }

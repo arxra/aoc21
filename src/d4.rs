@@ -1,5 +1,3 @@
-use anyhow::Result;
-
 type File = (Vec<usize>, Vec<Board>);
 
 #[derive(Debug, Clone)]
@@ -94,7 +92,7 @@ fn second(file: &mut File) -> usize {
     0
 }
 
-fn to_file(input: Vec<String>) -> Result<File> {
+fn to_file(input: Vec<String>) -> File {
     let numbers: Vec<usize> = input[0]
         .split(',')
         .map(|a| a.parse::<usize>().unwrap())
@@ -111,17 +109,23 @@ fn to_file(input: Vec<String>) -> Result<File> {
         boards.push(Board::new(board));
     }
 
-    Ok((numbers, boards))
+    (numbers, boards)
 }
 
-fn main() -> Result<()> {
-    let input: Vec<String> = std::fs::read_to_string("input")?
+fn file() -> File{
+    let input: Vec<String> = std::fs::read_to_string("input/d4").unwrap()
         .lines()
         .map(|f| f.to_string())
         .collect();
-    let mut file = to_file(input)?;
+    to_file(input)
+}
 
-    println!("s1: {}", first(&mut file.clone()));
-    println!("s2: {}", second(&mut file));
-    Ok(())
+#[test]
+fn p1(){
+    println!("d4-1: {}", first(&mut file()));
+
+}
+#[test]
+fn p2(){
+    println!("d4-2: {}", second(&mut file()));
 }
