@@ -14,16 +14,6 @@ fn sub_word(s1: &mut String, s2: &Vec<String>, expected: usize) -> bool {
     false
 }
 
-fn missing_numbers(nums: &Found) {
-    print!("missing numbers:");
-    for n in 0..10 {
-        if nums[n].is_empty() {
-            print!("{} ", n);
-        }
-    }
-    println!("");
-}
-
 fn solve(file: File, p1: bool) -> usize {
     let mut res = 0;
     if p1 {
@@ -41,9 +31,7 @@ fn solve(file: File, p1: bool) -> usize {
             let mut fives = Vec::new();
             let mut sixes = Vec::new();
 
-            // println!("parsing line: {:?}", line);
-
-            // 0,1,2,3,4,5,6,7,8,9
+            // We know some words just straight from the number of chars.
             for word in line[0].iter().chain(line[1].iter()) {
                 match word.len() {
                     2 => found[1].push(word.clone()),
@@ -81,14 +69,11 @@ fn solve(file: File, p1: bool) -> usize {
                 }
             }
 
-            // All numbers allocated
             let mut ans = String::new();
             'out: for out in line[1].clone() {
-                // println!("checking for {} in {:?}", out, found);
                 for i in 0..10 {
                     for f in found[i].clone() {
                         if out.len() == f.len() && sub_word(&mut out.clone(), &found[i], 0) {
-                            // println!("{} is equal to {:?}", out, found[i]);
                             ans.extend(i.to_string().chars());
                             continue 'out;
                         }
@@ -96,7 +81,6 @@ fn solve(file: File, p1: bool) -> usize {
                 }
                 todo!("not found number: {}", out);
             }
-            println!("Parsed {:?} into {}", line[1], ans.clone());
             res += ans.parse::<usize>().unwrap();
         });
         res
