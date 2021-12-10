@@ -1,13 +1,11 @@
 use std::collections::HashMap;
 
 type File = Vec<Vec<u32>>;
-type Map = HashMap<(usize, usize), bool>;
+type Map = HashMap<(usize, usize), (usize, usize)>;
 
 fn check(x: usize, y: usize, map: &mut Map, file: &File) -> Option<u32> {
     if map.contains_key(&(y, x)) {
         return None;
-    } else {
-        map.insert((y, x), true);
     }
 
     if file[y][x] == 9 {
@@ -19,8 +17,6 @@ fn check(x: usize, y: usize, map: &mut Map, file: &File) -> Option<u32> {
                 return check(x + 1, y, map, &file);
             } else if file[1][0] < file[0][0] {
                 return check(x, y + 1, map, &file);
-            } else {
-                return Some(file[y][x]);
             }
         }
         (x, 0) if file[0].len() > x + 1 => {
@@ -30,9 +26,6 @@ fn check(x: usize, y: usize, map: &mut Map, file: &File) -> Option<u32> {
                 return check(x - 1, y, map, &file);
             } else if file[1][x] < file[0][x] {
                 return check(x, 1, map, &file);
-            } else {
-                println!("checking x,0 x in range");
-                return Some(file[y][x]);
             }
         }
         (x, 0) => {
@@ -40,8 +33,6 @@ fn check(x: usize, y: usize, map: &mut Map, file: &File) -> Option<u32> {
                 return check(x - 1, y, map, &file);
             } else if file[y + 1][x] < file[0][x] {
                 return check(x, y + 1, map, &file);
-            } else {
-                return Some(file[y][x]);
             }
         }
         (0, y) if file.len() > y + 1 => {
@@ -51,17 +42,11 @@ fn check(x: usize, y: usize, map: &mut Map, file: &File) -> Option<u32> {
                 return check(x, y - 1, map, &file);
             } else if file[y][1] < file[y][0] {
                 return check(x + 1, y, map, &file);
-            } else {
-                println!("checking 0,y y in range");
-                return Some(file[y][x]);
             }
         }
         (0, y) => {
             if file[y - 1][0] < file[y][0] {
                 return check(x, y - 1, map, &file);
-            } else {
-                println!("checking 0,y after all ranges");
-                return Some(file[y][x]);
             }
         }
         (x, y) if file[0].len() > x + 1 && file.len() > y + 1 => {
@@ -73,9 +58,6 @@ fn check(x: usize, y: usize, map: &mut Map, file: &File) -> Option<u32> {
                 return check(x - 1, y, map, &file);
             } else if file[y][x + 1] < file[y][x] {
                 return check(x + 1, y, map, &file);
-            } else {
-                println!("checking x,y where x & y in range");
-                return Some(file[y][x]);
             }
         }
         (x, y) if file[0].len() > x + 1 => {
@@ -85,9 +67,6 @@ fn check(x: usize, y: usize, map: &mut Map, file: &File) -> Option<u32> {
                 return check(x - 1, y, map, &file);
             } else if file[y][x + 1] < file[y][x] {
                 return check(x + 1, y, map, &file);
-            } else {
-                println!("checked x,y where x in range");
-                return Some(file[y][x]);
             }
         }
         (x, y) if file.len() > y + 1 => {
@@ -97,9 +76,6 @@ fn check(x: usize, y: usize, map: &mut Map, file: &File) -> Option<u32> {
                 return check(x, y - 1, map, &file);
             } else if file[y][x - 1] < file[y][x] {
                 return check(x - 1, y, map, &file);
-            } else {
-                println!("checking x,y where y in range");
-                return Some(file[y][x]);
             }
         }
         (x, y) => {
@@ -107,12 +83,11 @@ fn check(x: usize, y: usize, map: &mut Map, file: &File) -> Option<u32> {
                 return check(x, y - 1, map, &file);
             } else if file[y][x - 1] < file[y][x] {
                 return check(x - 1, y, map, &file);
-            } else {
-                println!("checking x,y after all ranges");
-                return Some(file[y][x]);
             }
         }
     }
+    map.insert((y, x), (y, x));
+    Some(file[y][x])
 }
 
 #[allow(unused_variables)]
@@ -131,7 +106,18 @@ fn solve(file: File, p1: bool) -> u32 {
             }
         }
     }
-    found.into_iter().fold(0, |res, item| res + item + 1)
+    if p1 {
+        found.into_iter().fold(0, |res, item| res + item + 1)
+    } else {
+        let mut cm: HashMap<(usize, usize), u32> = HashMap::new();
+        visited
+            .into_values()
+            .for_each(|pair| *cm.entry(pair).or_insert(0) += 1);
+        let mut v = cm.into_values().collect::<Vec<u32>>();
+        v.sort();
+        println!("v: {:?}", v);
+        v.into_iter().rev().take(3).fold(1, |res, item| res * item)
+    }
 }
 
 fn file(path: &str) -> File {
