@@ -48,7 +48,6 @@ fn solve(file: File, p1: bool) -> usize {
         let mut error_scores: Vec<usize> = line_errors
             .into_iter()
             .map(|es| {
-                println!("es: {:?}", es);
                 es.into_iter().fold(0, |res: usize, item: char| match item {
                     ')' => 5 * res + 1,
                     ']' => 5 * res + 2,
@@ -59,7 +58,6 @@ fn solve(file: File, p1: bool) -> usize {
             })
             .collect::<Vec<usize>>();
         error_scores.sort();
-        dbg!(error_scores.clone());
         error_scores[error_scores.len() / 2]
     }
 }
