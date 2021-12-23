@@ -54,6 +54,20 @@ impl Packet {
                 }
                 debug!("### Finished parsing packets")
             }
+            
+            result = match ty {
+                0 => subs.iter().fold(0, |res, item| res + item.result),
+                1 => subs.iter().fold(1, |res, item| res * item.result),
+                2 => subs.iter().map(|a| a.result).min().unwrap(),
+                3 => subs.iter().map(|a| a.result).max().unwrap(),
+                5 if subs[0].result > subs[1].result => 1,
+                5 => 0,
+                6 if subs[0].result < subs[1].result => 1,
+                6 => 0,
+                7 if subs[0].result == subs[1].result => 1,
+                7 => 0,
+                _ => unreachable!("type was not in 0-7 without 4"),
+            };
         }
 
         Self {
@@ -79,10 +93,7 @@ fn parse_literal(packet: &[u8]) -> (usize, usize) {
     while point < packet.len() {
         res.push_str(&(std::str::from_utf8(&packet[point + 1..=point + 4]).unwrap()));
         if packet[point] as char == '0' {
-            return (
-                usize::from_str_radix(&res, 2).unwrap(),
-                point+5
-            );
+            return (usize::from_str_radix(&res, 2).unwrap(), point + 5);
         }
         point += 5;
     }
@@ -156,8 +167,8 @@ fn s1() {
     println!("d16-1: {}", ans.versions());
     // assert_eq!(ans, 5252);
 }
-// #[test]
-// fn s2() {
-//     let mut f = file("input/d16");
-//     println!("d16-2: {}", solve(&mut f));
-// }
+#[test]
+fn s2() {
+    let mut f = file("input/d16");
+    println!("d16-2: {}", solve(&mut f).result);
+}
